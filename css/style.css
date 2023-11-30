@@ -6,3 +6,7 @@ body {
   font-size: 4rem;
   /* what should hte max-width of this be? */
 }
+
+#rhyphy-result-set-list .card {
+  max-width: 8rem;
+}
