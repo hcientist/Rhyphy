@@ -8,5 +8,6 @@ body {
 }
 
 #rhyphy-result-set-list .card {
-  max-width: 8rem;
+  max-width: 24rem;
+  display: inline-block;
 }

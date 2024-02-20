@@ -47,9 +47,9 @@ async function searchGiphy(word) {
   );
 
   const giphyResultJSON = await giphyResp.json();
+  // console.log('giphy gif url', resultURL)
 
   const resultURL = giphyResultJSON.data[0].images.original.url;
-  // console.log('giphy gif url', resultURL)
   return resultURL;
 }
 
