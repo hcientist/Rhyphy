@@ -35,7 +35,7 @@ async function onSearch(ev) {
   resultsElem.innerHTML = ''
   resultsElem.append(...resultSet.results.map(createCardFromResult))
 
-  // prepare a lin kto export the data
+  // prepare a link to export the data
   const exportLink = document.getElementById("export");
   exportLink.href = makeDLURL(resultSet);
   exportLink.download = "rhyphy-export.json";
@@ -43,13 +43,13 @@ async function onSearch(ev) {
 
 async function searchGiphy(word) {
   const giphyResp = await fetch(
-    `https://api.giphy.com/v1/gifs/search?api_key=DqDqE5OTJMZkeTKmfCrx287T2jQL1o6t&q=${word}&limit=1&offset=0&rating=r&lang=en&bundle=messaging_non_clips`
+    `https://api.giphy.com/v1/gifs/search?api_key=DqDqE5OTJMZkeTKmfCrx287T2jQL1o6t&q=${word}&limit=1&offset=0&rating=pg&lang=en&bundle=messaging_non_clips`
   );
 
   const giphyResultJSON = await giphyResp.json();
-  // console.log('giphy gif url', resultURL)
+  console.log('giphy gif url', giphyResultJSON)
 
-  const resultURL = giphyResultJSON.data[0].images.original.url;
+  const resultURL = giphyResultJSON.data[0]?.images?.original?.url ?? "https://picsum.photos/200";
   return resultURL;
 }
 
@@ -96,6 +96,7 @@ function makeResultObj(rhymeResult, gifResult) {
 
 // need to notice the form was submitted
 function addListeners(elem) {
+  if (!elem) return;
   // given a form element as "elem", add an event listener
   elem.addEventListener("submit", onSearch);
 }
@@ -134,3 +135,25 @@ function createCardFromResult(r) {
   cardElem.append(imgElem, bodyElem)
   return cardElem
 }
+
+function populateFromLocalStorage() {
+  const histList = document.getElementById('hist-list')
+  for (let [key, val] of Object.entries(localStorage)) {
+    console.log(key, val)
+    try {
+      const result = JSON.parse(val)
+      console.log('result', result)
+      if (result.word) {
+        const li = document.createElement('li')
+        const anchor = document.createElement('a')
+        anchor.classList.add('dropdown-item')
+        anchor.textContent = key
+        li.appendChild(anchor)
+        histList.appendChild(li)
+      }
+    } catch (e) {
+      console.info('this was some other localstorage thing, irrelevant to the app')
+    }
+  }
+}
+populateFromLocalStorage();

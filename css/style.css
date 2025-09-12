@@ -11,3 +11,27 @@ body {
   max-width: 24rem;
   display: inline-block;
 }
+
+#mondo-landing-form button{
+  font-size: 3rem;
+  display: block;
+  width: 100%;
+  text-align: start;
+}
+
+.card output {
+  max-width: 100%;
+}
+
+.modal-bg {
+  background-color: #000000dd;
+}
+
+.modal-content.alert {
+  background-color: var(--bs-alert-bg);
+}
+
+.card.rhymage-card {
+  display: inline-flex;
+  max-width: 16rem;
+}
