@@ -42,7 +42,7 @@ async function onSearch(ev) {
 }
 
 async function searchGiphy(word) {
-  const giphyResp = await fetch(
+  const giphyResp = await proxiedFetch(
     `https://api.giphy.com/v1/gifs/search?api_key=DqDqE5OTJMZkeTKmfCrx287T2jQL1o6t&q=${word}&limit=1&offset=0&rating=pg&lang=en&bundle=messaging_non_clips`
   );
 
@@ -53,8 +53,19 @@ async function searchGiphy(word) {
   return resultURL;
 }
 
+async function proxiedFetch(targetUrl) {
+  return await fetch(
+    "https://approxi--approxi-65847.us-east4.hosted.app/p/Rhyphy?url=" + encodeURIComponent(targetUrl),
+    {
+      headers: {
+        "x-proxy-token": "dcaee6c6576f84c58b584e3b164cab0bef356a9ade7a625f",
+      },
+    },
+  );
+}
+
 function searchForRhymes(query) {
-  return fetch(
+  return proxiedFetch(
     `https://rhymebrain.com/talk?function=getRhymes&maxResults=10&word=${query}`
   );
 }
