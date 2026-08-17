@@ -15,8 +15,19 @@ async function onSearch(ev) {
   const formData = new FormData(ev.target);
   console.log("formData", formData);
   // window.tmp = formData
-  // search rhyme api
   const query = formData.get("query");
+  if (!query) return;
+
+  // a search the user typed should show up in the address bar, so the
+  // results they are looking at can be linked to / bookmarked / reloaded
+  pushQueryToURL(query);
+  await runSearch(query);
+}
+
+// the actual work, pulled out of the submit handler so that a ?q= in the url
+// can kick off the very same search without having to fake an event
+async function runSearch(query) {
+  // search rhyme api
   const rhymeResults = await (await searchForRhymes(query)).json(); // FIXME
 
   console.log("rhymeResults", rhymeResults);
@@ -163,3 +174,53 @@ function populateFromLocalStorage() {
   }
 }
 populateFromLocalStorage();
+
+// --- the query string is part of the app's state ---------------------------
+// index.html?q=cheese runs that search on load, and typing a search puts it
+// in the url, so a result set is something you can send someone a link to
+
+const QUERY_PARAM = "q";
+
+function getQueryFromURL() {
+  return new URLSearchParams(window.location.search).get(QUERY_PARAM);
+}
+
+// push (not replace) so the back button walks back through the searches
+function pushQueryToURL(query) {
+  const url = new URL(window.location);
+  url.searchParams.set(QUERY_PARAM, query);
+  history.pushState({ query }, "", url);
+}
+
+function fillSearchBoxes(query) {
+  searchForms.forEach((form) => {
+    if (!form) return;
+    const input = form.querySelector('[name="query"]');
+    if (input) input.value = query;
+  });
+}
+
+function searchFromURL() {
+  // about.html and archives.html load this file too, and they have nowhere
+  // to put results -- only run where there is a list waiting for them
+  const resultsElem = document.getElementById("rhyphy-result-set-list");
+  if (!resultsElem) return;
+
+  const query = getQueryFromURL();
+  console.log("query from the url", query);
+
+  if (!query) {
+    // walked back to the bare page -- clear the board
+    fillSearchBoxes("");
+    resultsElem.innerHTML = "";
+    return;
+  }
+
+  fillSearchBoxes(query);
+  runSearch(query);
+}
+
+// back/forward should move between searches, not just rewrite the url
+window.addEventListener("popstate", searchFromURL);
+
+searchFromURL();
