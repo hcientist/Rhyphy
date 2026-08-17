@@ -180,9 +180,21 @@ populateFromLocalStorage();
 // in the url, so a result set is something you can send someone a link to
 
 const QUERY_PARAM = "q";
+const ADULT_PARAM = "adult";
 
 function getQueryFromURL() {
   return new URLSearchParams(window.location.search).get(QUERY_PARAM);
+}
+
+// following a ?q= link drops you straight onto the gifs without anyone having
+// pressed the button that carries the warning, so raise it here instead.
+// ?adult in the url says this visitor has already been told.
+function showContentWarning() {
+  if (new URLSearchParams(window.location.search).has(ADULT_PARAM)) return;
+
+  const modalElem = document.getElementById("staticBackdrop");
+  if (!modalElem || !window.bootstrap) return;
+  bootstrap.Modal.getOrCreateInstance(modalElem).show();
 }
 
 // push (not replace) so the back button walks back through the searches
@@ -200,7 +212,7 @@ function fillSearchBoxes(query) {
   });
 }
 
-function searchFromURL() {
+function searchFromURL({ warn = false } = {}) {
   // about.html and archives.html load this file too, and they have nowhere
   // to put results -- only run where there is a list waiting for them
   const resultsElem = document.getElementById("rhyphy-result-set-list");
@@ -216,11 +228,13 @@ function searchFromURL() {
     return;
   }
 
+  if (warn) showContentWarning();
   fillSearchBoxes(query);
   runSearch(query);
 }
 
-// back/forward should move between searches, not just rewrite the url
-window.addEventListener("popstate", searchFromURL);
+// back/forward should move between searches, not just rewrite the url.
+// no warning on those -- this visitor already got it on the way in
+window.addEventListener("popstate", () => searchFromURL());
 
-searchFromURL();
+searchFromURL({ warn: true });
