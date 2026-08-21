@@ -1,5 +1,7 @@
 // console.log("\n\n\n\n\n HAI!")
 
+const canvasProxyClientId = '${canvasProxyClientId}';
+
 // whenever either (any?) of the forms are submitted, do the work...
 
 const searchForms = [
@@ -53,8 +55,9 @@ async function runSearch(query) {
 }
 
 async function searchGiphy(word) {
-  const giphyResp = await apiFetch(
-    `https://api.giphy.com/v1/gifs/search?api_key=DqDqE5OTJMZkeTKmfCrx287T2jQL1o6t&q=${word}&limit=1&offset=0&rating=pg&lang=en&bundle=messaging_non_clips`
+  // const giphyResp = await apiFetch(
+  const giphyResp = await fetch(
+    `https://canvas.mhciael.com/ext/public/${canvasProxyClientId}/gifs/search?q=${word}&limit=1&offset=0&rating=pg&lang=en&bundle=messaging_non_clips`
   );
 
   const giphyResultJSON = await giphyResp.json();
@@ -66,6 +69,8 @@ async function searchGiphy(word) {
 
 // both giphy and rhymebrain answer with Access-Control-Allow-Origin: *,
 // so the browser can talk to them directly -- no proxy in the middle
+// otoh since giphy relies on an api_key for managing quotas,
+// we should use a proxy to protect our giphy api key
 async function apiFetch(targetUrl) {
   return await fetch(targetUrl);
 }
@@ -122,7 +127,7 @@ searchForms.forEach(addListeners);
 
 function createCardFromResult(r) {
   console.log(r);
-  const {word, rhymeData, gifURL} = r
+  const { word, rhymeData, gifURL } = r
   let cardElem, imgElem, bodyElem, titleElem, detailsElem;
   cardElem = document.createElement("div");
   cardElem.classList.add("card");
