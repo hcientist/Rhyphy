@@ -1,6 +1,6 @@
 // console.log("\n\n\n\n\n HAI!")
 
-const canvasProxyClientId = '${canvasProxyClientId}';
+const canvasProxyClientId = '7d0d3e80347749f29d6b54bca99c91b1';
 
 // whenever either (any?) of the forms are submitted, do the work...
 
